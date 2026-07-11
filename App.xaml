@@ -1,0 +1,8 @@
+    <Application x:Class="BatteryGuardian.App"
+                xmlns="http://schemas.microsoft.com/winfx/2000/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2000/xaml"
+                xmlns:local="clr-namespace:BatteryGuardian">
+        <Application.Resources>
+            <!-- Anda bisa mengosongkan bagian resource ini atau memasukkan style global di sini -->
+        </Application.Resources>
+    </Application>

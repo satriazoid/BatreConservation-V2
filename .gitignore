@@ -1,0 +1,22 @@
+# --- .NET / C# Build Artifacts ---
+bin/
+obj/
+
+# --- IDE & Editor Settings ---
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# --- Runtime Data / Outputs according to PRD ---
+BatteryGuardian/Config/config.json
+BatteryGuardian/Logs/
+logs/
+*.log
+
+# --- OS Generated Files ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
