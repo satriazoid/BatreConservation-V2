@@ -1,18 +1,32 @@
 # --- .NET / C# Build Artifacts ---
 bin/
 obj/
+publish/
+AppPackages/
+packages/
+TestResults/
+coverage/
 
 # --- IDE & Editor Settings ---
 .vscode/
+.vs/
 .idea/
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
+*.dbmdl
+*.jfm
+*.pdb
+*.cache
+*.tmp
+*.temp
+*.trx
+*.nupkg
 
 # --- Runtime Data / Outputs according to PRD ---
-BatteryGuardian/Config/config.json
-BatteryGuardian/Logs/
+Config/config.json
+Logs/
 logs/
 *.log
 
@@ -20,3 +34,4 @@ logs/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+.DS_Store

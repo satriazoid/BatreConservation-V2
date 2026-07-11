@@ -3,10 +3,11 @@ using System.Windows;
 using BatteryGuardian.Services;
 using BatteryGuardian.ViewModels;
 using BatteryGuardian.Views;
+using AppBase = System.Windows.Application;
 
 namespace BatteryGuardian
 {
-    public partial class App : Application
+    public partial class App : AppBase
     {
         protected override void OnStartup(StartupEventArgs e)
         {
