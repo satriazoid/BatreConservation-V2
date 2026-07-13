@@ -52,6 +52,22 @@
                 <Button Content="Disable" Command="{Binding DisableCommand}" Margin="5"/>
             </StackPanel>
 
+            <Border Background="#1D1D1D" CornerRadius="12" Padding="12" Margin="0,0,0,15">
+                <StackPanel>
+                    <TextBlock Text="Cut-off Settings" Foreground="White" FontWeight="Bold" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <TextBlock Text="Stop at" Foreground="#BDBDBD" Width="80" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding StopCharging, UpdateSourceTrigger=PropertyChanged}" Width="60"/>
+                        <TextBlock Text="%" Foreground="#BDBDBD" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Resume at" Foreground="#BDBDBD" Width="80" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding ResumeCharging, UpdateSourceTrigger=PropertyChanged}" Width="60"/>
+                        <TextBlock Text="%" Foreground="#BDBDBD" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
             <TextBlock Text="Status: Running in Background" Foreground="#BDBDBD" FontSize="11" HorizontalAlignment="Center" Margin="0,20,0,0"/>
         </StackPanel>
     </Grid>

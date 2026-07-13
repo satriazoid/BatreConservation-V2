@@ -6,5 +6,6 @@ namespace BatteryGuardian.Models
         public int ResumeCharging { get; set; } = 85;
         public bool AutoStart { get; set; } = true;
         public bool Tray { get; set; } = true;
+        public bool ThresholdEnabled { get; set; } = false;
     }
 }

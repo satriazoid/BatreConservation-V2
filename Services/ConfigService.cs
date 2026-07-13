@@ -11,29 +11,38 @@ namespace BatteryGuardian.Services
 
         public ConfigService()
         {
+            Config = new AppConfig();
             LoadConfig();
         }
 
         public void LoadConfig()
         {
-            if (File.Exists(_filePath))
+            string fullPath = Path.GetFullPath(_filePath);
+            if (File.Exists(fullPath))
             {
                 try
                 {
-                    string json = File.ReadAllText(_filePath);
-                    Config = JsonSerializer.Deserialize<AppConfig>(json) ?? new AppConfig();
-                    return;
+                    string json = File.ReadAllText(fullPath);
+                    if (!string.IsNullOrWhiteSpace(json))
+                    {
+                        Config = JsonSerializer.Deserialize<AppConfig>(json) ?? new AppConfig();
+                        return;
+                    }
                 }
                 catch { }
             }
+
             Config = new AppConfig();
             SaveConfig();
         }
 
         public void SaveConfig()
         {
+            string fullPath = Path.GetFullPath(_filePath);
+            string directory = Path.GetDirectoryName(fullPath)!;
+            Directory.CreateDirectory(directory);
             string json = JsonSerializer.Serialize(Config, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(_filePath, json);
+            File.WriteAllText(fullPath, json);
         }
     }
 }
