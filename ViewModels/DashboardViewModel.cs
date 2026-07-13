@@ -23,8 +23,34 @@ namespace BatreConservation.ViewModels
         public int BatteryPercentage { get => _batteryPercentage; set { _batteryPercentage = value; OnPropertyChanged(); } }
         public string StatusText { get => _statusText; set { _statusText = value; OnPropertyChanged(); } }
         public bool IsThresholdEnabled { get => _isThresholdEnabled; set { _isThresholdEnabled = value; OnPropertyChanged(); } }
-        public int StopCharging { get => _configService.Config.StopCharging; set { _configService.Config.StopCharging = value; _configService.SaveConfig(); OnPropertyChanged(); } }
-        public int ResumeCharging { get => _configService.Config.ResumeCharging; set { _configService.Config.ResumeCharging = value; _configService.SaveConfig(); OnPropertyChanged(); } }
+        public string ThresholdSummary => $"Current thresholds: stop {GetClampedValue(_configService.Config.StopCharging)}% • resume {GetClampedValue(_configService.Config.ResumeCharging)}%";
+        public int StopCharging
+        {
+            get => _configService.Config.StopCharging;
+            set
+            {
+                _configService.Config.StopCharging = ClampThreshold(value);
+                if (_configService.Config.ResumeCharging > _configService.Config.StopCharging)
+                    _configService.Config.ResumeCharging = _configService.Config.StopCharging;
+                _configService.SaveConfig();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ThresholdSummary));
+            }
+        }
+
+        public int ResumeCharging
+        {
+            get => _configService.Config.ResumeCharging;
+            set
+            {
+                _configService.Config.ResumeCharging = ClampThreshold(value);
+                if (_configService.Config.ResumeCharging > _configService.Config.StopCharging)
+                    _configService.Config.ResumeCharging = _configService.Config.StopCharging;
+                _configService.SaveConfig();
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(ThresholdSummary));
+            }
+        }
 
         public ICommand EnableCommand { get; }
         public ICommand DisableCommand { get; }
@@ -48,10 +74,14 @@ namespace BatreConservation.ViewModels
             OnTimerTick(this, EventArgs.Empty);
         }
 
+        private static int ClampThreshold(int value) => Math.Clamp(value, 0, 100);
+        private static int GetClampedValue(int value) => Math.Clamp(value, 0, 100);
+
         private void OnTimerTick(object? sender, EventArgs e)
         {
             var status = _batteryService.GetBatteryStatus();
             BatteryPercentage = status.Percentage;
+            OnPropertyChanged(nameof(ThresholdSummary));
 
             if (!IsThresholdEnabled)
             {
@@ -79,8 +109,8 @@ namespace BatreConservation.ViewModels
                 return;
             }
 
-            int stop = Math.Clamp(_configService.Config.StopCharging, 0, 100);
-            int resume = Math.Clamp(_configService.Config.ResumeCharging, 0, 100);
+            int stop = GetClampedValue(_configService.Config.StopCharging);
+            int resume = GetClampedValue(_configService.Config.ResumeCharging);
 
             bool shouldStopCharging = status.Percentage >= stop && status.IsCharging;
             bool shouldResumeCharging = status.Percentage <= resume && !status.IsCharging;
