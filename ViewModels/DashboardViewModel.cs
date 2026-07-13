@@ -19,7 +19,7 @@ namespace BatteryGuardian.ViewModels
         private int _batteryPercentage;
         private string _statusText = "Unknown";
         private bool _isThresholdEnabled;
-        private bool _lastThresholdState;
+        private bool _isConservationActive;
 
         public int BatteryPercentage { get => _batteryPercentage; set { _batteryPercentage = value; OnPropertyChanged(); } }
         public string StatusText { get => _statusText; set { _statusText = value; OnPropertyChanged(); } }
@@ -39,7 +39,7 @@ namespace BatteryGuardian.ViewModels
             _startupService = startup;
 
             IsThresholdEnabled = _configService.Config.ThresholdEnabled;
-            _lastThresholdState = IsThresholdEnabled;
+            _isConservationActive = false;
 
             EnableCommand = new RelayCommand(_ => ToggleThreshold(true));
             DisableCommand = new RelayCommand(_ => ToggleThreshold(false));
@@ -47,6 +47,7 @@ namespace BatteryGuardian.ViewModels
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _timer.Tick += OnTimerTick;
             _timer.Start();
+            OnTimerTick(this, EventArgs.Empty);
         }
 
         private void OnTimerTick(object? sender, EventArgs e)
@@ -55,7 +56,18 @@ namespace BatteryGuardian.ViewModels
             BatteryPercentage = status.Percentage;
             StatusText = status.IsAcConnected ? (status.IsCharging ? "Charging" : "AC Connected, Not Charging") : "Discharging";
 
-            if (!IsThresholdEnabled || !status.IsAcConnected)
+            if (!IsThresholdEnabled)
+            {
+                if (_isConservationActive)
+                {
+                    _isConservationActive = false;
+                    _thresholdService.SetConservationMode(false);
+                    _notifier.ShowNotification("Threshold Disabled", "Battery threshold is off.");
+                }
+                return;
+            }
+
+            if (!status.IsAcConnected)
             {
                 return;
             }
@@ -66,15 +78,15 @@ namespace BatteryGuardian.ViewModels
             bool shouldStopCharging = status.Percentage >= stop && status.IsCharging;
             bool shouldResumeCharging = status.Percentage <= resume && !status.IsCharging;
 
-            if (shouldStopCharging && !_lastThresholdState)
+            if (shouldStopCharging && !_isConservationActive)
             {
-                _lastThresholdState = true;
+                _isConservationActive = true;
                 _thresholdService.SetConservationMode(true);
-                _notifier.ShowNotification("Charging Stopped", $"Battery reached {stop}%.");
+                _notifier.ShowNotification("Cut-off Charge Active", $"Battery reached {stop}% and charging was stopped.");
             }
-            else if (shouldResumeCharging && _lastThresholdState)
+            else if (shouldResumeCharging && _isConservationActive)
             {
-                _lastThresholdState = false;
+                _isConservationActive = false;
                 _thresholdService.SetConservationMode(false);
                 _notifier.ShowNotification("Charging Resumed", $"Battery dropped to {resume}%.");
             }
@@ -85,9 +97,26 @@ namespace BatteryGuardian.ViewModels
             IsThresholdEnabled = enable;
             _configService.Config.ThresholdEnabled = enable;
             _configService.SaveConfig();
-            _lastThresholdState = enable;
-            _thresholdService.SetConservationMode(enable);
-            _notifier.ShowNotification(enable ? "Threshold Enabled" : "Threshold Disabled", enable ? "Battery limit active." : "Battery will charge to 100%.");
+
+            if (!enable)
+            {
+                _isConservationActive = false;
+                _thresholdService.SetConservationMode(false);
+                _notifier.ShowNotification("Threshold Disabled", "Battery will charge to 100%.");
+                return;
+            }
+
+            var status = _batteryService.GetBatteryStatus();
+            int stop = Math.Clamp(_configService.Config.StopCharging, 0, 100);
+            bool shouldActivateNow = status.IsAcConnected && status.IsCharging && status.Percentage >= stop;
+            _isConservationActive = shouldActivateNow;
+
+            _thresholdService.SetConservationMode(shouldActivateNow);
+            _notifier.ShowNotification(
+                "Threshold Enabled",
+                shouldActivateNow
+                    ? $"Battery limit active at {stop}%."
+                    : $"Battery limit enabled at {stop}%. Waiting for cut-off threshold.");
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
