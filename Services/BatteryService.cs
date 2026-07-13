@@ -1,6 +1,6 @@
 using System.Windows.Forms;
 
-namespace BatteryGuardian.Services
+namespace BatreConservation.Services
 {
     public class BatteryInfo
     {

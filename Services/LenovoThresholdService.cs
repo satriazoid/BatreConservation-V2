@@ -1,20 +1,23 @@
 using System.IO;
 
-namespace BatteryGuardian.Services
+namespace BatreConservation.Services
 {
     public class LenovoThresholdService
     {
+        private readonly string _logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", "log.txt");
+
         public bool SetConservationMode(bool enable)
         {
             try
             {
-                string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs", "log.txt");
-                Directory.CreateDirectory(Path.GetDirectoryName(logPath)!);
-                File.AppendAllText(logPath, $"[{DateTime.Now:O}] Lenovo conservation mode {(enable ? "enabled" : "disabled")} (placeholder).{Environment.NewLine}");
-                return true;
+                Directory.CreateDirectory(Path.GetDirectoryName(_logPath)!);
+                File.AppendAllText(_logPath, $"[{DateTime.Now:O}] Threshold request received: {(enable ? "enable" : "disable")}." + Environment.NewLine);
+                File.AppendAllText(_logPath, $"[{DateTime.Now:O}] This device/build does not expose a real Lenovo battery-threshold interface, so the request cannot be applied to hardware." + Environment.NewLine);
+                return false;
             }
-            catch
+            catch (Exception ex)
             {
+                File.AppendAllText(_logPath, $"[{DateTime.Now:O}] Threshold apply failed: {ex.Message}" + Environment.NewLine);
                 return false;
             }
         }

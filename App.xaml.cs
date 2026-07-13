@@ -1,11 +1,11 @@
 using System.IO;
 using System.Windows;
-using BatteryGuardian.Services;
-using BatteryGuardian.ViewModels;
-using BatteryGuardian.Views;
+using BatreConservation.Services;
+using BatreConservation.ViewModels;
+using BatreConservation.Views;
 using AppBase = System.Windows.Application;
 
-namespace BatteryGuardian
+namespace BatreConservation
 {
     public partial class App : AppBase
     {

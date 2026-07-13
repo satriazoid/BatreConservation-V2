@@ -1,147 +1,61 @@
-# Battery Conservation
+# BatreConservation
 
-Battery Conservation adalah aplikasi desktop Windows yang dirancang khusus untuk laptop Lenovo yang mendukung Battery Charge Threshold. Aplikasi ini memungkinkan pengguna memantau kondisi baterai serta mengelola batas pengisian daya melalui antarmuka yang modern, ringan, dan mudah digunakan.
+BatreConservation adalah aplikasi desktop Windows yang ditujukan khusus untuk Lenovo ThinkPad T480 yang ingin memanfaatkan fitur cut-off battery. Aplikasi ini membantu memantau status baterai, mengatur batas cut-off charging, dan memberi pemahaman tentang dukungan perangkat yang tersedia.
 
-> Status: In Development
+> Status: ThinkPad T480 focused prototype
 
-## Features
+## Fitur Utama
 
-* Modern dark theme.
-* Rounded UI dengan aksen putih.
-* Real-time battery monitoring.
-* Battery percentage.
-* Charging status.
-* AC adapter detection.
-* Battery health information.
-* Design Capacity.
-* Full Charge Capacity.
-* Battery Wear calculation.
-* Cycle Count.
-* Enable atau Disable charging threshold.
-* Charging threshold presets.
+* Monitoring baterai real-time
+* Deteksi status pengisian dan adaptor AC
+* Pengaturan batas stop charging dan resume charging
+* Toggle enable/disable threshold
+* Log aktivitas lokal
+* Penyimpanan konfigurasi lokal
 
-  * Stop Charging: 80%, 90%, 95%.
-  * Resume Charging: 75%, 85%, 90%.
-* Start with Windows.
-* Minimize to System Tray.
-* Windows notification.
-* Configuration auto save.
-* Local log history.
-* Offline mode.
+## Tujuan Proyek
 
-## Screenshot
+Proyek ini difokuskan untuk Lenovo ThinkPad T480 agar lebih realistis dan tidak mengklaim fitur yang tidak bisa dijamin bekerja di semua model Lenovo. Tujuannya adalah memberikan pengalaman yang lebih cocok untuk pengguna ThinkPad T480 yang ingin menjaga kesehatan baterai.
 
-Coming Soon
+## Persyaratan
 
-## Technology Stack
+* Windows 10/11 (64-bit)
+* .NET 8 Runtime
+* Lenovo ThinkPad T480
 
-| Component     | Technology         |
-| ------------- | ------------------ |
-| Language      | C#                 |
-| Framework     | .NET 8             |
-| UI            | WPF                |
-| Pattern       | MVVM               |
-| Configuration | JSON               |
-| Logging       | Serilog            |
-| Notifications | Windows App SDK    |
-| IDE           | Visual Studio 2022 |
-
-## Project Structure
+## Struktur Proyek
 
 ```text
-BatteryConservation/
+BatreConservation/
 
-├── Assets/
 ├── Config/
-├── Helpers/
 ├── Logs/
 ├── Models/
-├── Resources/
 ├── Services/
 ├── ViewModels/
 ├── Views/
 ├── App.xaml
-└── Program.cs
+├── App.xaml.cs
+└── BatteryConservation.csproj
 ```
 
-## Requirements
-
-* Windows 11 (64-bit)
-* .NET 8 Runtime
-* Lenovo laptop with Battery Charge Threshold support
-
-## Installation
-
-```bash
-https://github.com/satriazoid/BatreConservation-V2
-```
-
-### Build dengan VS Code + .NET Dev Kit
-
-1. Buka folder proyek di VS Code.
-2. Pastikan ekstensi .NET Dev Kit sudah terinstall.
-3. Buka terminal dan jalankan:
+## Build
 
 ```bash
 dotnet restore BatteryConservation.sln
 dotnet build BatteryConservation.sln
 ```
 
-4. Jika ingin menjalankan aplikasi:
+## Jalankan
 
 ```bash
 dotnet run --project BatteryConservation.csproj
 ```
 
-5. Atau pilih project di Explorer lalu klik Run/Debug.
+## Catatan Penting
 
-> Catatan: project ini ditargetkan untuk Windows dan .NET 8.
+Aplikasi ini dibuat untuk ThinkPad T480 dan tidak menjamin fitur cut-off battery akan bekerja pada semua konfigurasi. Keberhasilan fitur sangat bergantung pada dukungan BIOS, driver, dan mekanisme sistem yang tersedia pada laptop Anda.
 
-## Planned Features
-
-* Automatic update.
-* Battery usage history.
-* Battery health chart.
-* Multiple charging profiles.
-* Battery analytics dashboard.
-* Portable version.
-* CLI support.
-* Local REST API.
-* Export logs.
-* Multi-language support.
-* ASUS support.
-* Dell support.
-* HP support.
-* MSI support.
-
-## Roadmap
-
-### Version 1.0
-
-* Battery monitoring
-* Threshold management
-* System tray
-* Notifications
-* Settings
-
-### Version 1.1
-
-* Battery analytics
-* Charts
-* Export logs
-* Performance improvements
-
-### Version 2.0
-
-* Multi-brand support
-* Plugin architecture
-* Auto updater
-* Portable mode
-
-## License
+## Lisensi
 
 MIT License
-
-## Disclaimer
-
-Battery Conservation only supports laptops that expose battery charging controls through Lenovo firmware, BIOS, ACPI, or WMI interfaces. Hardware without charge threshold support cannot be controlled by software alone.

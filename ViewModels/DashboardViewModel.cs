@@ -3,21 +3,20 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Windows.Threading;
-using BatteryGuardian.Services;
+using BatreConservation.Services;
 
-namespace BatteryGuardian.ViewModels
+namespace BatreConservation.ViewModels
 {
     public class DashboardViewModel : INotifyPropertyChanged
     {
         private readonly BatteryService _batteryService;
         private readonly LenovoThresholdService _thresholdService;
         private readonly ConfigService _configService;
-        private readonly NotificationService _notifier;
         private readonly StartupService _startupService;
         private readonly DispatcherTimer _timer;
 
         private int _batteryPercentage;
-        private string _statusText = "Unknown";
+        private string _statusText = "Ready";
         private bool _isThresholdEnabled;
         private bool _isConservationActive;
 
@@ -35,7 +34,6 @@ namespace BatteryGuardian.ViewModels
             _batteryService = battery;
             _thresholdService = threshold;
             _configService = config;
-            _notifier = notifier;
             _startupService = startup;
 
             IsThresholdEnabled = _configService.Config.ThresholdEnabled;
@@ -54,7 +52,17 @@ namespace BatteryGuardian.ViewModels
         {
             var status = _batteryService.GetBatteryStatus();
             BatteryPercentage = status.Percentage;
-            StatusText = status.IsAcConnected ? (status.IsCharging ? "Charging" : "AC Connected, Not Charging") : "Discharging";
+
+            if (!IsThresholdEnabled)
+            {
+                StatusText = "Monitoring only • ThinkPad T480";
+            }
+            else
+            {
+                StatusText = status.IsAcConnected
+                    ? (status.IsCharging ? "Threshold enabled • charging" : "Threshold enabled • plugged in")
+                    : "Threshold enabled • waiting for AC";
+            }
 
             if (!IsThresholdEnabled)
             {
@@ -62,7 +70,6 @@ namespace BatteryGuardian.ViewModels
                 {
                     _isConservationActive = false;
                     _thresholdService.SetConservationMode(false);
-                    _notifier.ShowNotification("Threshold Disabled", "Battery threshold is off.");
                 }
                 return;
             }
@@ -82,13 +89,11 @@ namespace BatteryGuardian.ViewModels
             {
                 _isConservationActive = true;
                 _thresholdService.SetConservationMode(true);
-                _notifier.ShowNotification("Cut-off Charge Active", $"Battery reached {stop}% and charging was stopped.");
             }
             else if (shouldResumeCharging && _isConservationActive)
             {
                 _isConservationActive = false;
                 _thresholdService.SetConservationMode(false);
-                _notifier.ShowNotification("Charging Resumed", $"Battery dropped to {resume}%.");
             }
         }
 
@@ -101,22 +106,24 @@ namespace BatteryGuardian.ViewModels
             if (!enable)
             {
                 _isConservationActive = false;
+                StatusText = "Monitoring only • ThinkPad T480";
                 _thresholdService.SetConservationMode(false);
-                _notifier.ShowNotification("Threshold Disabled", "Battery will charge to 100%.");
                 return;
             }
 
             var status = _batteryService.GetBatteryStatus();
             int stop = Math.Clamp(_configService.Config.StopCharging, 0, 100);
             bool shouldActivateNow = status.IsAcConnected && status.IsCharging && status.Percentage >= stop;
-            _isConservationActive = shouldActivateNow;
+            bool appliedToHardware = _thresholdService.SetConservationMode(shouldActivateNow);
 
-            _thresholdService.SetConservationMode(shouldActivateNow);
-            _notifier.ShowNotification(
-                "Threshold Enabled",
-                shouldActivateNow
-                    ? $"Battery limit active at {stop}%."
-                    : $"Battery limit enabled at {stop}%. Waiting for cut-off threshold.");
+            if (!appliedToHardware)
+            {
+                _isConservationActive = false;
+                StatusText = "Threshold enabled • monitor mode";
+                return;
+            }
+
+            _isConservationActive = shouldActivateNow;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;

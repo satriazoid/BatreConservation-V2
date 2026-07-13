@@ -1,8 +1,8 @@
 using System.IO;
 using System.Text.Json;
-using BatteryGuardian.Models;
+using BatreConservation.Models;
 
-namespace BatteryGuardian.Services
+namespace BatreConservation.Services
 {
     public class ConfigService
     {

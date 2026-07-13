@@ -1,4 +1,4 @@
-namespace BatteryGuardian.Models
+namespace BatreConservation.Models
 {
     public class AppConfig
     {

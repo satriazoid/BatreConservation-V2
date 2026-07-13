@@ -2,11 +2,11 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.IO;
 
-namespace BatteryGuardian.Services
+namespace BatreConservation.Services
 {
     public class StartupService
     {
-        private const string AppName = "BatteryGuardian";
+        private const string AppName = "BatreConservation";
 
         public void SetStartup(bool enable)
         {
@@ -17,7 +17,7 @@ namespace BatteryGuardian.Services
                 {
                     if (enable)
                     {
-                        string appPath = Process.GetCurrentProcess().MainModule?.FileName ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BatteryGuardian.exe");
+                        string appPath = Process.GetCurrentProcess().MainModule?.FileName ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BatreConservation.exe");
                         key.SetValue(AppName, $"\"{appPath}\" --background");
                     }
                     else

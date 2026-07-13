@@ -1,8 +1,8 @@
 using System.ComponentModel;
 using System.Windows;
-using BatteryGuardian.ViewModels;
+using BatreConservation.ViewModels;
 
-namespace BatteryGuardian.Views
+namespace BatreConservation.Views
 {
     public partial class MainWindow : Window
     {

@@ -1,7 +1,7 @@
 using System.IO;
 using System.Windows;
 
-namespace BatteryGuardian.Services
+namespace BatreConservation.Services
 {
     public class NotificationService
     {
